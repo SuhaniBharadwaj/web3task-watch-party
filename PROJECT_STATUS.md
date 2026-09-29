@@ -1,24 +1,25 @@
 # Project Status
 
 ## Current Stage
-Project setup.
+Stage 1: WebSocket Connection Proof of Concept.
 
 ## Completed
 - Antigravity installed
 - Project created
 - Git initialized
 - Main branch created
+- Monorepo structure (/server and /client)
+- Express + Socket.IO backend setup with CORS and /health check
+- Vite + React frontend setup with socket.io-client
+- Real-time ping/pong bidirectional test verified
 
 ## In Progress
-Initial project architecture.
+Stage 2 Planning.
 
 ## Not Started
-- Frontend
-- Backend
 - Database
 - Authentication
 - REST APIs
-- Socket.IO
 - YouTube integration
 - Room management
 - Roles and permissions
@@ -30,4 +31,4 @@ Initial project architecture.
 None.
 
 ## Last Updated
-Initial setup.
+Stage 1 WebSocket connection verified.
