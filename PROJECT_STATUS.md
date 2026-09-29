@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Stage
-Stage 1: WebSocket Connection Proof of Concept.
+Stage 2: In-Memory Rooms.
 
 ## Completed
 - Antigravity installed
@@ -12,18 +12,21 @@ Stage 1: WebSocket Connection Proof of Concept.
 - Express + Socket.IO backend setup with CORS and /health check
 - Vite + React frontend setup with socket.io-client
 - Real-time ping/pong bidirectional test verified
+- In-memory room management module (/server/rooms.js)
+- Socket.IO room events: create_room, join_room, leave_room, user_joined, user_left
+- Frontend UI switch between Home and Room views
+- Real-time participant roster updates on join/leave/disconnect
 
 ## In Progress
-Stage 2 Planning.
+Stage 3 Planning.
 
 ## Not Started
-- Database
+- Database (kept in server memory per project rules)
 - Authentication
 - REST APIs
 - YouTube integration
-- Room management
-- Roles and permissions
-- Real-time synchronization
+- Video playback synchronization
+- Roles and permissions management
 - Testing
 - Deployment
 
@@ -31,4 +34,4 @@ Stage 2 Planning.
 None.
 
 ## Last Updated
-Stage 1 WebSocket connection verified.
+Stage 2 In-Memory Rooms implemented.
