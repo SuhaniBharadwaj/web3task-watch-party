@@ -1,0 +1,114 @@
+:root {
+  --primary: #1976d2;
+  --primary-hover: #1565c0;
+  --success: #2e7d32;
+  --danger: #d32f2f;
+  --warning: #f57c00;
+  --bg-page: #f4f6f8;
+  --bg-card: #ffffff;
+  --text-main: #212121;
+  --text-muted: #666666;
+  --border-color: #e0e0e0;
+  --border-radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+/* App container */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Connection status bar */
+.status-bar {
+  text-align: center;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.status-connected {
+  background-color: #e8f5e9;
+  color: var(--success);
+}
+
+.status-disconnected {
+  background-color: #ffebee;
+  color: var(--danger);
+}
+
+/* Room Page Layout */
+.room-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-card);
+  padding: 16px 20px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.room-code-badge {
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #e3f2fd;
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.video-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Responsive breakpoint: stack vertically on screens <= 800px */
+@media (max-width: 800px) {
+  .room-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}

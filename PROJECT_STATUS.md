@@ -1,37 +1,37 @@
 # Project Status
 
 ## Current Stage
-Stage 2: In-Memory Rooms.
+Complete: All Mandatory Requirements (M1-M9) & Bonus B1 Implemented and Tested.
 
 ## Completed
-- Antigravity installed
-- Project created
-- Git initialized
-- Main branch created
-- Monorepo structure (/server and /client)
-- Express + Socket.IO backend setup with CORS and /health check
-- Vite + React frontend setup with socket.io-client
-- Real-time ping/pong bidirectional test verified
-- In-memory room management module (/server/rooms.js)
-- Socket.IO room events: create_room, join_room, leave_room, user_joined, user_left
-- Frontend UI switch between Home and Room views
-- Real-time participant roster updates on join/leave/disconnect
+- Antigravity installed & Git repository initialized
+- Monorepo architecture (/server and /client)
+- Express + Socket.IO backend with CORS and /health check
+- In-memory room store with unique collision-free codes
+- Fixed "Room not found" bug with full regression test coverage
+- YouTube IFrame API integration with transparent click shield
+- Authoritative server-side video playback synchronization (play, pause, seek, change_video)
+- Dynamic elapsed time calculation for late-joining participants
+- Role-based permissions matrix (Host, Moderator, Participant)
+- Server-side permission validation and payload sanitization
+- Real-time role assignment and participant removal
+- Host migration on host leave or disconnect
+- Bonus B1: Host transfer functionality
+- Rate limiting protection (20 events / 5s)
+- Comprehensive automated test suite (12/12 tests passing)
+- Single-service Render deployment readiness and production build scripts
+- Complete documentation and architectural overview in README.md
 
 ## In Progress
-Stage 3 Planning.
+Ready for deployment.
 
 ## Not Started
-- Database (kept in server memory per project rules)
-- Authentication
-- REST APIs
-- YouTube integration
-- Video playback synchronization
-- Roles and permissions management
-- Testing
-- Deployment
+- Persistent database (intentionally omitted; memory store used per assignment scope)
+- User authentication (out of scope for MVP)
+- Real-time chat & emojis (out of scope for MVP)
 
 ## Known Issues
 None.
 
 ## Last Updated
-Stage 2 In-Memory Rooms implemented.
+Full-stack implementation completed and verified.

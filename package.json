@@ -1,0 +1,10 @@
+{
+  "name": "youtube-watch-party",
+  "version": "1.0.0",
+  "private": true,
+  "description": "YouTube Watch Party full-stack web application",
+  "scripts": {
+    "build": "npm --prefix server install && npm --prefix client install && npm --prefix client run build",
+    "start": "node server/index.js"
+  }
+}

@@ -1,14 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { socket } from '../lib/socket';
 
-function Home({ onRoomJoined }) {
+function Home({ onRoomJoined, initialError }) {
   // Input states
   const [username, setUsername] = useState('');
   const [roomCode, setRoomCode] = useState('');
 
   // Error and loading states
-  const [error, setError] = useState('');
+  const [error, setError] = useState(initialError || '');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Check for ?room=CODE in URL query params on mount
+  useEffect(() => {
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      const roomParam = searchParams.get('room');
+      if (roomParam) {
+        setRoomCode(roomParam.trim().toUpperCase());
+      }
+    } catch (e) {
+      // Ignore URL parsing errors
+    }
+  }, []);
+
+  // Update error if parent passes down initialError
+  useEffect(() => {
+    if (initialError) {
+      setError(initialError);
+    }
+  }, [initialError]);
 
   // Validate username helper
   const getTrimmedUsername = () => {
@@ -34,20 +54,19 @@ function Home({ onRoomJoined }) {
 
     setIsLoading(true);
 
-    // Emit create_room event to the server with an acknowledgement callback
+    // Emit create_room event to the server with acknowledgement callback
     socket.emit('create_room', { username: validUsername }, (response) => {
       setIsLoading(false);
 
       if (response && response.ok) {
-        // Success: pass room info up to App.jsx
         onRoomJoined({
           roomId: response.roomId,
           username: validUsername,
-          role: 'host',
-          participants: response.participants
+          role: response.you.role || 'host',
+          participants: response.participants,
+          syncState: response.syncState
         });
       } else {
-        // Show error message returned by server
         setError((response && response.error) || 'Failed to create room.');
       }
     });
@@ -62,19 +81,18 @@ function Home({ onRoomJoined }) {
     if (!validUsername) return;
 
     const trimmedCode = roomCode.trim().toUpperCase();
-    if (!trimmedCode) {
-      setError('Please enter a room code.');
+    if (!trimmedCode || trimmedCode.length !== 6) {
+      setError('Please enter a valid 6-character room code.');
       return;
     }
 
     setIsLoading(true);
 
-    // Emit join_room event to the server with an acknowledgement callback
+    // Emit join_room event to the server with acknowledgement callback
     socket.emit('join_room', { roomId: trimmedCode, username: validUsername }, (response) => {
       setIsLoading(false);
 
       if (response && response.ok) {
-        // Success: find our role in the returned participants list
         const myInfo = response.participants.find((p) => p.userId === socket.id);
         const myRole = myInfo ? myInfo.role : 'participant';
 
@@ -82,10 +100,10 @@ function Home({ onRoomJoined }) {
           roomId: response.roomId,
           username: validUsername,
           role: myRole,
-          participants: response.participants
+          participants: response.participants,
+          syncState: response.syncState
         });
       } else {
-        // Show error message returned by server
         setError((response && response.error) || 'Failed to join room.');
       }
     });
@@ -178,7 +196,7 @@ function Home({ onRoomJoined }) {
         <h3 style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Join an Existing Party</h3>
         <input
           type="text"
-          placeholder="6-character room code (e.g. ABC234)"
+          placeholder="6-character room code (e.g. XXDGNU)"
           value={roomCode}
           onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
           maxLength={6}

@@ -5,27 +5,37 @@ import Room from './pages/Room';
 
 function App() {
   // Track whether client is connected to backend Socket.IO server
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [connectionStatus, setConnectionStatus] = useState(
+    socket.connected ? 'connected' : 'connecting'
+  );
 
-  // Active room state: null when in lobby, or { roomId, username, role, participants }
+  // Active room state: null when in lobby, or { roomId, username, role, participants, syncState }
   const [roomData, setRoomData] = useState(null);
+
+  // Message to display on Home screen (e.g. after disconnect or removal)
+  const [homeNotice, setHomeNotice] = useState('');
 
   useEffect(() => {
     function onConnect() {
-      setIsConnected(true);
+      setConnectionStatus('connected');
     }
 
-    function onDisconnect() {
-      setIsConnected(false);
-      // If server drops connection, reset back to Home
-      setRoomData(null);
+    function onDisconnect(reason) {
+      setConnectionStatus('disconnected');
+      // If server drops connection while in a room, reset back to Home with friendly message
+      setRoomData((currentRoom) => {
+        if (currentRoom) {
+          setHomeNotice('Disconnected from server. Please rejoin or create a room.');
+        }
+        return null;
+      });
     }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
 
     if (socket.connected) {
-      setIsConnected(true);
+      setConnectionStatus('connected');
     }
 
     return () => {
@@ -36,31 +46,39 @@ function App() {
 
   // Called when user successfully creates or joins a room
   const handleRoomJoined = (data) => {
+    setHomeNotice('');
     setRoomData(data);
   };
 
-  // Called when user clicks "Leave room"
-  const handleLeaveRoom = () => {
+  // Called when user clicks "Leave room" or is removed
+  const handleLeaveRoom = (message) => {
     setRoomData(null);
+    if (message) {
+      setHomeNotice(message);
+    }
   };
 
   return (
-    <div>
-      {/* Small top banner showing backend connection status */}
-      <div style={{
-        textAlign: 'center',
-        padding: '6px 12px',
-        fontSize: '12px',
-        backgroundColor: isConnected ? '#e8f5e9' : '#ffebee',
-        color: isConnected ? '#2e7d32' : '#c62828',
-        fontWeight: '500'
-      }}>
-        Backend: {isConnected ? 'Connected' : 'Disconnected (Reconnecting...)'}
+    <div className="app-container">
+      {/* Top indicator for server connection status */}
+      <div
+        className={`status-bar ${
+          connectionStatus === 'connected' ? 'status-connected' : 'status-disconnected'
+        }`}
+      >
+        Server Status:{' '}
+        <strong>
+          {connectionStatus === 'connected'
+            ? 'Connected'
+            : connectionStatus === 'connecting'
+            ? 'Connecting...'
+            : 'Disconnected (Reconnecting...)'}
+        </strong>
       </div>
 
       {/* Switch between Home and Room view */}
       {!roomData ? (
-        <Home onRoomJoined={handleRoomJoined} />
+        <Home onRoomJoined={handleRoomJoined} initialError={homeNotice} />
       ) : (
         <Room roomData={roomData} onLeaveRoom={handleLeaveRoom} />
       )}
