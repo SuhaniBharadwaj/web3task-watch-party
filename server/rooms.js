@@ -59,6 +59,12 @@ function getSyncState(code) {
   };
 }
 
+function getActiveSyncStates() {
+  return Array.from(rooms.entries())
+    .filter(([, room]) => room.video && room.video.videoId && room.video.playState === 'playing')
+    .map(([code]) => ({ code, syncState: getSyncState(code) }));
+}
+
 // Create a new room with creator as host
 function createRoom(hostSocketId, username) {
   const code = generateUniqueCode();
@@ -325,6 +331,7 @@ module.exports = {
   joinRoom,
   leaveRoom,
   getSyncState,
+  getActiveSyncStates,
   computeCurrentTime,
   updatePlay,
   updatePause,

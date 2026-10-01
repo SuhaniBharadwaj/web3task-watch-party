@@ -47,6 +47,22 @@ function waitForEvent(socket, event, timeout = 3000) {
   });
 }
 
+function expectNoEvent(socket, event, timeout = 4500) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      socket.off(event, onEvent);
+      resolve();
+    }, timeout);
+
+    function onEvent() {
+      clearTimeout(timer);
+      reject(new Error(`Unexpected event "${event}" while playback is paused`));
+    }
+
+    socket.once(event, onEvent);
+  });
+}
+
 function cleanup() {
   for (const s of openSockets) {
     if (s.connected) {
@@ -126,6 +142,38 @@ async function runTests() {
       throw new Error(`Invalid sync_state after play: ${JSON.stringify(playSync)}`);
     }
     console.log('✔ Host played video; sync_state shows playing at time >= 10.');
+
+    console.log('\n[TEST 3A] Explicit Seeks and Host Pause/Resume');
+    for (const targetTime of [10.4, 9.8, 35]) {
+      const seekSyncPromise = waitForEvent(p1Socket, 'sync_state');
+      hostSocket.emit('seek', { time: targetTime });
+      const seekSync = await seekSyncPromise;
+      if (!seekSync.forceSeek || Math.abs(seekSync.currentTime - targetTime) > 0.2) {
+        throw new Error(`Explicit seek was not marked or applied accurately: ${JSON.stringify(seekSync)}`);
+      }
+    }
+    console.log('✔ Forward, backward, and large seeks include the forced-seek marker.');
+
+    const hostPauseSyncPromise = waitForEvent(p1Socket, 'sync_state');
+    hostSocket.emit('pause', { currentTime: 35 });
+    const hostPauseSync = await hostPauseSyncPromise;
+    if (hostPauseSync.playState !== 'paused') {
+      throw new Error(`Host pause did not broadcast paused state: ${JSON.stringify(hostPauseSync)}`);
+    }
+    await expectNoEvent(p1Socket, 'sync_state');
+    console.log('✔ Host pause is respected and periodic broadcasts stop while paused.');
+
+    const hostResumeSyncPromise = waitForEvent(p1Socket, 'sync_state');
+    hostSocket.emit('play', { currentTime: 35 });
+    const hostResumeSync = await hostResumeSyncPromise;
+    if (hostResumeSync.playState !== 'playing') {
+      throw new Error(`Host resume did not broadcast playing state: ${JSON.stringify(hostResumeSync)}`);
+    }
+    const periodicSync = await waitForEvent(p1Socket, 'sync_state', 5000);
+    if (periodicSync.playState !== 'playing' || periodicSync.currentTime <= 35) {
+      throw new Error(`Active room did not receive periodic authoritative sync: ${JSON.stringify(periodicSync)}`);
+    }
+    console.log('✔ Host resume is followed by periodic authoritative sync.');
 
     console.log('\n[TEST 4] Late Joiner Receives Current State with Elapsed Time');
     await new Promise((r) => setTimeout(r, 600)); // Wait 600ms for playback time to elapse

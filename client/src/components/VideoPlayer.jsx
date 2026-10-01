@@ -12,6 +12,15 @@ function VideoPlayer({
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
   const isApplyingRemote = useRef(false);
+  const syncStateRef = useRef(syncState);
+  const pendingForcedSeekRef = useRef(false);
+
+  useEffect(() => {
+    syncStateRef.current = syncState;
+    if (syncState && syncState.forceSeek) {
+      pendingForcedSeekRef.current = true;
+    }
+  }, [syncState]);
 
   // Initialize YouTube IFrame Player when videoId is present
   useEffect(() => {
@@ -25,12 +34,13 @@ function VideoPlayer({
 
         // If player already exists, just cue/load the new video
         if (playerRef.current && typeof playerRef.current.loadVideoById === 'function') {
+          const latestSyncState = syncStateRef.current;
           isApplyingRemote.current = true;
           playerRef.current.loadVideoById({
             videoId: videoId,
-            startSeconds: syncState ? syncState.currentTime : 0
+            startSeconds: latestSyncState ? latestSyncState.currentTime : 0
           });
-          if (syncState && syncState.playState === 'paused') {
+          if (latestSyncState && latestSyncState.playState === 'paused') {
             playerRef.current.pauseVideo();
           }
           setTimeout(() => {
@@ -51,25 +61,9 @@ function VideoPlayer({
               playsinline: 1
             },
             events: {
-              onReady: (event) => {
+              onReady: () => {
                 if (!isMounted) return;
                 setIsPlayerReady(true);
-
-                // Apply initial sync state once player is ready
-                if (syncState) {
-                  isApplyingRemote.current = true;
-                  if (syncState.currentTime > 0) {
-                    event.target.seekTo(syncState.currentTime, true);
-                  }
-                  if (syncState.playState === 'playing') {
-                    event.target.playVideo();
-                  } else {
-                    event.target.pauseVideo();
-                  }
-                  setTimeout(() => {
-                    isApplyingRemote.current = false;
-                  }, 600);
-                }
               }
             }
           });
@@ -96,15 +90,20 @@ function VideoPlayer({
     try {
       const currentLocalTime = player.getCurrentTime();
       const targetTime = syncState.currentTime || 0;
+      const forceSeek = pendingForcedSeekRef.current || syncState.forceSeek === true;
 
       // Only seek if time difference is greater than 1.5 seconds to prevent jitter
-      if (Math.abs(currentLocalTime - targetTime) > 1.5) {
+      if (forceSeek || Math.abs(currentLocalTime - targetTime) > 1.5) {
         player.seekTo(targetTime, true);
+        pendingForcedSeekRef.current = false;
       }
 
+      const playerState = typeof player.getPlayerState === 'function' ? player.getPlayerState() : -1;
       if (syncState.playState === 'playing') {
-        player.playVideo();
-      } else {
+        if (playerState !== 1 && playerState !== 3) {
+          player.playVideo();
+        }
+      } else if (playerState !== 2) {
         player.pauseVideo();
       }
     } catch (err) {

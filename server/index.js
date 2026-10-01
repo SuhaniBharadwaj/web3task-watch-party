@@ -21,6 +21,7 @@ const {
   joinRoom,
   leaveRoom,
   getSyncState,
+  getActiveSyncStates,
   computeCurrentTime,
   updatePlay,
   updatePause,
@@ -78,6 +79,15 @@ const io = new Server(server, {
     credentials: true
   }
 });
+
+const SYNC_BROADCAST_INTERVAL_MS = 4000;
+const syncBroadcastInterval = setInterval(() => {
+  for (const { code, syncState } of getActiveSyncStates()) {
+    io.to(code).emit('sync_state', syncState);
+  }
+}, SYNC_BROADCAST_INTERVAL_MS);
+syncBroadcastInterval.unref();
+server.on('close', () => clearInterval(syncBroadcastInterval));
 
 // Simple in-memory rate limiting: max 20 events per 5 seconds per socket
 const rateLimits = new Map();
@@ -370,7 +380,7 @@ io.on('connection', (socket) => {
       }
 
       const syncState = updateSeek(ctx.roomCode, timeVal.value);
-      io.to(ctx.roomCode).emit('sync_state', syncState);
+      io.to(ctx.roomCode).emit('sync_state', { ...syncState, forceSeek: true });
     } catch (err) {
       sendRoomError(socket, 'INVALID_PAYLOAD', 'Error handling seek event.');
     }

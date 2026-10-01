@@ -228,9 +228,3 @@ The application is configured to deploy as **a single unified Web Service** on R
 
 ---
 
-## Known Limitations & Design Decisions
-
-1. **In-Memory Volatility**: Room states are maintained in server memory (`Map`). Server restarts (or Render free-tier sleep cycles) will clear active rooms. This satisfies the MVP requirements while keeping performance optimal.
-2. **Socket Session Identity**: A user's identity is tied to their `socket.id`. Refreshing the browser creates a new connection and counts as a new session.
-3. **Direct YouTube API Integration**: To guarantee that participants cannot bypass playback permissions, the YouTube player controls are hidden (`controls: 0`) and protected by a transparent DOM shield, routing all actions through the server.
-4. **Browser Autoplay Policies**: Modern browsers restrict unmuted autoplay without prior interaction. If a user joins an active party that is already playing, an unobtrusive "Click to sync playback" prompt enables immediate audio-video synchronization upon click.
