@@ -156,20 +156,12 @@ function VideoPlayer({
   // If no video has been loaded yet, show helpful placeholder
   if (!videoId) {
     return (
-      <div style={{
-        aspectRatio: '16/9',
-        backgroundColor: '#1a1a1a',
-        color: '#ffffff',
-        borderRadius: '8px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        padding: '24px'
-      }}>
-        <h3 style={{ margin: '0 0 8px 0', fontSize: '20px' }}>No video loaded</h3>
-        <p style={{ margin: 0, color: '#aaa', fontSize: '14px', maxWidth: '400px' }}>
+      <div className="stage empty">
+        <span className="empty-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M9 6.5c0-.8.88-1.29 1.56-.87l8.12 4.63a1 1 0 0 1 0 1.74l-8.12 4.63A1 1 0 0 1 9 15.76z" fill="currentColor" /></svg>
+        </span>
+        <h3>No video loaded</h3>
+        <p>
           {canControl
             ? 'Paste a YouTube video URL or ID in the controls below and click Load to start watching.'
             : 'Waiting for the host or a moderator to select a YouTube video.'}
@@ -179,47 +171,24 @@ function VideoPlayer({
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+    <div className="stage">
       {/* YouTube Player mounting container */}
-      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      <div className="player" ref={containerRef} />
 
       {/* Transparent overlay preventing direct clicks on the YouTube iframe to bypass permissions */}
       <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 10,
-          cursor: 'default'
-        }}
+        className="overlay"
       />
 
       {/* Autoplay unlock prompt button */}
       {needsUserInteraction && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 20
-        }}>
+        <div className="sync-btn">
           <button
             onClick={handleManualSyncClick}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#1976d2',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              fontSize: '15px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.5)'
-            }}
+            className="sync-button"
           >
-            ▶ Click to sync playback
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.75c0-.58.63-.94 1.13-.65l7 4.25a.76.76 0 0 1 0 1.3l-7 4.25A.76.76 0 0 1 7 13.25z" fill="currentColor" /></svg>
+            <span>Click to sync playback</span>
           </button>
         </div>
       )}

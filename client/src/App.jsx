@@ -60,27 +60,30 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Top indicator for server connection status */}
-      <div
-        className={`status-bar ${
-          connectionStatus === 'connected' ? 'status-connected' : 'status-disconnected'
-        }`}
-      >
-        Server Status:{' '}
-        <strong>
-          {connectionStatus === 'connected'
-            ? 'Connected'
-            : connectionStatus === 'connecting'
-            ? 'Connecting...'
-            : 'Disconnected (Reconnecting...)'}
-        </strong>
-      </div>
-
       {/* Switch between Home and Room view */}
       {!roomData ? (
-        <Home onRoomJoined={handleRoomJoined} initialError={homeNotice} />
+        <>
+          <div
+            className={`status-bar ${
+              connectionStatus === 'connected'
+                ? 'status-connected'
+                : connectionStatus === 'connecting'
+                ? 'status-connecting'
+                : 'status-disconnected'
+            }`}
+          >
+            <strong>
+              {connectionStatus === 'connected'
+                ? 'Connected'
+                : connectionStatus === 'connecting'
+                ? 'Connecting…'
+                : 'Disconnected · reconnecting'}
+            </strong>
+          </div>
+          <Home onRoomJoined={handleRoomJoined} initialError={homeNotice} />
+        </>
       ) : (
-        <Room roomData={roomData} onLeaveRoom={handleLeaveRoom} />
+        <Room roomData={roomData} onLeaveRoom={handleLeaveRoom} connectionStatus={connectionStatus} />
       )}
     </div>
   );

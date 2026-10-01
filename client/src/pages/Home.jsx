@@ -109,129 +109,79 @@ function Home({ onRoomJoined, initialError }) {
     });
   };
 
+  // Everything above is unchanged logic. Only the markup below was redesigned.
   return (
-    <div style={{
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      maxWidth: '460px',
-      margin: '60px auto',
-      padding: '28px',
-      border: '1px solid #e0e0e0',
-      borderRadius: '10px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-      backgroundColor: '#ffffff'
-    }}>
-      <h2 style={{ marginTop: 0, textAlign: 'center', color: '#1a1a1a' }}>
-        YouTube Watch Party
-      </h2>
-
-      {/* Error alert banner */}
-      {error && (
-        <div style={{
-          backgroundColor: '#ffebee',
-          color: '#c62828',
-          padding: '10px 14px',
-          borderRadius: '6px',
-          marginBottom: '18px',
-          fontSize: '14px',
-          border: '1px solid #ffcdd2'
-        }}>
-          {error}
+    <main className="hp">
+      <section className="hp-visual">
+        <div className="hp-brand">
+          <span className="hp-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M8 5.75c0-.78.85-1.26 1.52-.86l9.2 5.5a1 1 0 0 1 0 1.72l-9.2 5.5A1 1 0 0 1 8 16.75z" fill="currentColor" />
+            </svg>
+          </span>
+          <span className="hp-wordmark">Watch Party</span>
         </div>
-      )}
+        <div aria-hidden="true">
+          <div className="hp-stars" />
+          <div className="hp-moon" />
+          <div className="hp-city hp-city-back" />
+          <div className="hp-city hp-city-front" />
+        </div>
+      </section>
 
-      {/* Username Input Field */}
-      <div style={{ marginBottom: '22px' }}>
-        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px' }}>
-          Your Username:
-        </label>
-        <input
-          type="text"
-          placeholder="e.g. Alice"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          maxLength={20}
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            boxSizing: 'border-box',
-            border: '1px solid #ccc',
-            borderRadius: '6px',
-            fontSize: '15px'
-          }}
-        />
-      </div>
+      <section className="hp-panel" aria-labelledby="hp-title">
+        <div className="hp-form">
+          <h1 id="hp-title" className="hp-title">Who’s watching?</h1>
 
-      <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '22px 0' }} />
+          {error && (
+            <div className="hp-error" role="alert">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 18 17H2z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><path d="M10 7v4.5m0 2.5v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+              <span>{error}</span>
+            </div>
+          )}
 
-      {/* Create Room Section */}
-      <div style={{ marginBottom: '24px' }}>
-        <h3 style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Start a New Party</h3>
-        <button
-          onClick={handleCreateRoom}
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '11px',
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '15px',
-            fontWeight: 'bold',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.7 : 1
-          }}
-        >
-          {isLoading ? 'Creating...' : 'Create Room'}
-        </button>
-      </div>
+          <div className="hp-field">
+            <label htmlFor="watch-party-username">Your name</label>
+            <input
+              id="watch-party-username"
+              className="hp-input"
+              type="text"
+              placeholder="e.g. Alice"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              maxLength={20}
+              disabled={isLoading}
+            />
+          </div>
 
-      <div style={{ textAlign: 'center', color: '#888', margin: '16px 0', fontSize: '13px' }}>
-        — OR —
-      </div>
+          <button className="hp-btn primary" onClick={handleCreateRoom} disabled={isLoading}>
+            {isLoading && <span className="hp-spinner" aria-hidden="true" />}
+            {isLoading ? 'Creating room…' : 'Create a room'}
+          </button>
 
-      {/* Join Room Section */}
-      <div>
-        <h3 style={{ margin: '0 0 10px 0', fontSize: '16px' }}>Join an Existing Party</h3>
-        <input
-          type="text"
-          placeholder="6-character room code (e.g. XXDGNU)"
-          value={roomCode}
-          onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-          maxLength={6}
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            boxSizing: 'border-box',
-            border: '1px solid #ccc',
-            borderRadius: '6px',
-            fontSize: '15px',
-            letterSpacing: '2px',
-            marginBottom: '10px'
-          }}
-        />
-        <button
-          onClick={handleJoinRoom}
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '11px',
-            backgroundColor: '#388e3c',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '15px',
-            fontWeight: 'bold',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.7 : 1
-          }}
-        >
-          {isLoading ? 'Joining...' : 'Join Room'}
-        </button>
-      </div>
-    </div>
+          <div className="hp-divider"><span>or join with a code</span></div>
+
+          <div className="hp-field">
+            <label htmlFor="watch-party-code">Room code</label>
+            <input
+              id="watch-party-code"
+              className="hp-input code"
+              type="text"
+              placeholder="Enter the 6-character code"
+              value={roomCode}
+              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+              maxLength={6}
+              disabled={isLoading}
+            />
+          </div>
+
+          <button className="hp-btn secondary" onClick={handleJoinRoom} disabled={isLoading}>
+            {isLoading && <span className="hp-spinner" aria-hidden="true" />}
+            {isLoading ? 'Joining room…' : 'Join room'}
+          </button>
+        </div>
+      </section>
+    </main>
   );
 }
 

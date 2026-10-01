@@ -59,37 +59,18 @@ function PlayerControls({
   const isPlaying = playState === 'playing';
 
   return (
-    <div style={{
-      backgroundColor: '#f9f9f9',
-      border: '1px solid #e0e0e0',
-      borderRadius: '8px',
-      padding: '16px',
-      marginTop: '12px'
-    }}>
+    <div className="player-controls">
       {/* Notice for non-controlling participants */}
       {!canControl && (
-        <div style={{
-          backgroundColor: '#fff3e0',
-          color: '#e65100',
-          padding: '8px 12px',
-          borderRadius: '4px',
-          fontSize: '13px',
-          marginBottom: '12px',
-          fontWeight: '500'
-        }}>
-          ℹ Only the host and moderators can control playback.
+        <div className="playback-notice">
+          <span aria-hidden="true">i</span>
+          Only the host and moderators can control playback.
         </div>
       )}
 
       {/* Progress & Seek Bar */}
-      <div style={{ marginBottom: '14px' }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: '12px',
-          color: '#666',
-          marginBottom: '4px'
-        }}>
+      <div className="seek-section">
+        <div className="seek-times">
           <span>{formatTime(displayedTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
@@ -105,99 +86,65 @@ function PlayerControls({
           onMouseUp={handleSeekMouseUp}
           onTouchStart={handleSeekMouseDown}
           onTouchEnd={handleSeekMouseUp}
-          style={{
-            width: '100%',
-            cursor: canControl && hasVideo ? 'pointer' : 'not-allowed',
-            accentColor: '#1976d2'
-          }}
+          className="seek-slider"
         />
       </div>
 
       {/* Play/Pause Control Button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+      <div className="playback-actions">
         {isPlaying ? (
           <button
             onClick={onPause}
             disabled={!canControl || !hasVideo}
-            style={{
-              padding: '8px 20px',
-              backgroundColor: canControl && hasVideo ? '#e53935' : '#ccc',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 'bold',
-              cursor: canControl && hasVideo ? 'pointer' : 'not-allowed'
-            }}
+            className="playback-button"
           >
-            ⏸ Pause
+            <span aria-hidden="true">Ⅱ</span> Pause
           </button>
         ) : (
           <button
             onClick={onPlay}
             disabled={!canControl || !hasVideo}
-            style={{
-              padding: '8px 20px',
-              backgroundColor: canControl && hasVideo ? '#2e7d32' : '#ccc',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 'bold',
-              cursor: canControl && hasVideo ? 'pointer' : 'not-allowed'
-            }}
+            className="playback-button"
           >
-            ▶ Play
+            <span aria-hidden="true">▶</span> Play
           </button>
         )}
-        <span style={{ fontSize: '13px', color: '#555' }}>
+        <span className="playback-state">
           Status: <strong>{playState ? playState.toUpperCase() : 'STOPPED'}</strong>
         </span>
       </div>
 
       {/* Change Video Section (Host & Moderator only) */}
-      {canControl && (
-        <form onSubmit={handleLoadVideo} style={{ borderTop: '1px solid #eee', paddingTop: '12px' }}>
-          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '6px' }}>
-            Load New Video:
+      {canControl ? (
+        <form onSubmit={handleLoadVideo} className="load-video-form">
+          <label htmlFor="load-video-input">
+            Load new video
           </label>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="load-video-row">
             <input
+              id="load-video-input"
               type="text"
-              placeholder="Paste YouTube URL or Video ID..."
+              placeholder="Paste a YouTube URL or video ID"
               value={videoInput}
               onChange={(e) => {
                 setVideoInput(e.target.value);
                 if (inputError) setInputError('');
               }}
-              style={{
-                flex: 1,
-                padding: '8px 10px',
-                fontSize: '13px',
-                borderRadius: '4px',
-                border: '1px solid #ccc'
-              }}
             />
-            <button
-              type="submit"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#1976d2',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                fontWeight: 'bold',
-                fontSize: '13px',
-                cursor: 'pointer'
-              }}
-            >
+            <button type="submit" className="load-video-button">
               Load
             </button>
           </div>
           {inputError && (
-            <p style={{ color: '#d32f2f', fontSize: '12px', margin: '6px 0 0 0' }}>
+            <p className="input-error" role="alert">
               {inputError}
             </p>
           )}
         </form>
+      ) : (
+        <div className="load-video-unavailable" aria-label="Loading a new video is unavailable to participants">
+          Video selection is available to the host and moderators.
+        </div>
       )}
     </div>
   );

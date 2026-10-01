@@ -23,7 +23,8 @@ Complete: All Mandatory Requirements (M1-M9) & Bonus B1 Implemented and Tested.
 - Complete documentation and architectural overview in README.md
 
 ## In Progress
-Ready for deployment.
+- Premium visual redesign pass for the watch party UI is complete and verified in-browser.
+- Frontend styling changes are limited to layout, spacing, typography, colors, and hierarchy; no backend or socket logic changes were introduced.
 
 ## Not Started
 - Persistent database (intentionally omitted; memory store used per assignment scope)
@@ -34,4 +35,4 @@ Ready for deployment.
 None.
 
 ## Last Updated
-Full-stack implementation completed and verified.
+Visual redesign milestone completed and verified in the browser. Multi-user room join, host video load, and synced room state were confirmed on the running app.

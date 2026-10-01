@@ -1,5 +1,19 @@
 import React from 'react';
 
+const AVATAR_COLORS = ['#c8a96b', '#7d9b8b', '#bd8271', '#a5a18e', '#82969b', '#bb9c72'];
+
+function getAvatarDetails(username) {
+  const name = String(username || '').trim();
+  let hash = 0;
+  for (const character of name) {
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  }
+  return {
+    initial: name.charAt(0).toUpperCase() || '?',
+    color: AVATAR_COLORS[hash % AVATAR_COLORS.length]
+  };
+}
+
 function ParticipantList({
   participants,
   currentUserId,
@@ -10,108 +24,56 @@ function ParticipantList({
 }) {
   const isHost = currentUserRole === 'host';
 
-  const getRoleBadgeStyle = (role) => {
-    switch (role) {
-      case 'host':
-        return { backgroundColor: '#ffe0b2', color: '#e65100', border: '1px solid #ffcc80' };
-      case 'moderator':
-        return { backgroundColor: '#e1bee7', color: '#6a1b9a', border: '1px solid #ce93d8' };
-      default:
-        return { backgroundColor: '#e0e0e0', color: '#424242', border: '1px solid #d6d6d6' };
-    }
-  };
-
   return (
-    <div style={{
-      backgroundColor: '#ffffff',
-      border: '1px solid #e0e0e0',
-      borderRadius: '8px',
-      padding: '16px'
-    }}>
-      <h3 style={{ margin: '0 0 14px 0', fontSize: '16px', display: 'flex', justifyContent: 'space-between' }}>
-        <span>Participants</span>
-        <span style={{ color: '#666', fontWeight: 'normal' }}>({participants.length})</span>
-      </h3>
+    <section className="participants-panel" aria-labelledby="participants-heading">
+      <header className="people-heading">
+        <h2 id="participants-heading">Participants</h2>
+        <span className="people-count">{participants.length}</span>
+      </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div className="people-list">
         {participants.map((p) => {
           const isMe = p.userId === currentUserId;
-          const badgeStyle = getRoleBadgeStyle(p.role);
+          const avatar = getAvatarDetails(p.username);
 
           return (
             <div
               key={p.userId}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                padding: '10px 12px',
-                borderRadius: '6px',
-                backgroundColor: isMe ? '#f1f8e9' : '#fafafa',
-                border: isMe ? '1px solid #c5e1a5' : '1px solid #eee'
-              }}
+              className={`person-row${isMe ? ' is-current-user' : ''}`}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <span style={{ fontWeight: isMe ? 'bold' : 'normal', fontSize: '14px' }}>
-                    {p.username}
-                  </span>
+              <div className="person-main">
+                <span className="person-avatar" style={{ '--avatar-color': avatar.color }} aria-hidden="true">
+                  {avatar.initial}
+                </span>
+                <div className="person-name-group">
+                  <span className="person-name">{p.username}</span>
                   {isMe && (
-                    <span style={{ fontSize: '11px', color: '#558b2f', marginLeft: '6px', fontWeight: 'bold' }}>
-                      (You)
+                    <span className="you-label">
+                      (you)
                     </span>
                   )}
                 </div>
-                <span style={{
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                  padding: '2px 8px',
-                  borderRadius: '12px',
-                  textTransform: 'uppercase',
-                  ...badgeStyle
-                }}>
+                <span className={`role-badge role-${p.role}`}>
                   {p.role}
                 </span>
               </div>
 
               {/* Host actions on other participants */}
               {isHost && !isMe && (
-                <div style={{
-                  display: 'flex',
-                  gap: '6px',
-                  borderTop: '1px solid #eee',
-                  paddingTop: '6px',
-                  fontSize: '12px'
-                }}>
+                <div className="person-actions">
                   {p.role === 'participant' ? (
                     <button
                       onClick={() => onAssignRole(p.userId, 'moderator')}
-                      style={{
-                        flex: 1,
-                        padding: '4px 6px',
-                        backgroundColor: '#7b1fa2',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
+                      className="role-action"
                     >
-                      Make Mod
+                      Make moderator
                     </button>
                   ) : (
                     <button
                       onClick={() => onAssignRole(p.userId, 'participant')}
-                      style={{
-                        flex: 1,
-                        padding: '4px 6px',
-                        backgroundColor: '#757575',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
+                      className="role-action"
                     >
-                      Dismiss Mod
+                      Make participant
                     </button>
                   )}
 
@@ -119,15 +81,7 @@ function ParticipantList({
                   {onTransferHost && (
                     <button
                       onClick={() => onTransferHost(p.userId)}
-                      style={{
-                        flex: 1,
-                        padding: '4px 6px',
-                        backgroundColor: '#ef6c00',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
+                      className="role-action"
                     >
                       Make Host
                     </button>
@@ -135,14 +89,7 @@ function ParticipantList({
 
                   <button
                     onClick={() => onRemoveParticipant(p.userId)}
-                    style={{
-                      padding: '4px 8px',
-                      backgroundColor: '#d32f2f',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
+                    className="remove-button"
                   >
                     Remove
                   </button>
@@ -152,7 +99,7 @@ function ParticipantList({
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }
 

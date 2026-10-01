@@ -5,7 +5,7 @@ import PlayerControls from '../components/PlayerControls';
 import ParticipantList from '../components/ParticipantList';
 import Toast from '../components/Toast';
 
-function Room({ roomData, onLeaveRoom }) {
+function Room({ roomData, onLeaveRoom, connectionStatus }) {
   // Room state
   const [participants, setParticipants] = useState(roomData.participants || []);
   const [myRole, setMyRole] = useState(roomData.role || 'participant');
@@ -176,78 +176,75 @@ function Room({ roomData, onLeaveRoom }) {
   }, []);
 
   return (
-    <div className="room-container">
+    <main className="room-container">
       {/* Toast notifications container */}
-      <Toast toasts={toasts} onDismiss={removeToast} />
+      <div className="toast-layer">
+        <Toast toasts={toasts} onDismiss={removeToast} />
+      </div>
 
       {/* Room Header bar */}
       <div className="room-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <h2 style={{ margin: 0, fontSize: '20px' }}>Watch Party</h2>
-            <span className="room-code-badge">{roomData.roomId}</span>
-            <button
-              onClick={handleCopyLink}
-              style={{
-                padding: '6px 12px',
-                fontSize: '12px',
-                backgroundColor: '#ffffff',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: '500'
-              }}
-            >
-              📋 Copy Invite Link
+        <div className="room-branding">
+          <div className="room-brand-line">
+            <span className="brand-mark brand-mark-small" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M8 5.75c0-.78.85-1.26 1.52-.86l9.2 5.5a1 1 0 0 1 0 1.72l-9.2 5.5A1 1 0 0 1 8 16.75z" fill="currentColor" />
+              </svg>
+            </span>
+            <span className="brand-wordmark room-wordmark">Watch Party</span>
+            <span className="room-code-badge" aria-label={`Room code ${roomData.roomId}`}>{roomData.roomId}</span>
+            <button className="button button-copy" onClick={handleCopyLink} aria-label="Copy invite link">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="6" width="9" height="11" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M13 4H5.5A1.5 1.5 0 0 0 4 5.5V14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+              <span>Copy invite link</span>
             </button>
           </div>
-          <div style={{ marginTop: '6px', fontSize: '13px', color: '#666' }}>
-            Logged in as <strong>{roomData.username}</strong> ({myRole.toUpperCase()})
-          </div>
+          <div className="room-user">Watching as <strong>{roomData.username}</strong></div>
         </div>
 
-        <button
-          onClick={handleLeave}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#d32f2f',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
-        >
-          Leave Party
-        </button>
+        <div className="room-header-actions">
+          <span
+            className={`room-connection status-${connectionStatus}`}
+            role="status"
+          >
+            {connectionStatus === 'connected'
+              ? 'Connected'
+              : connectionStatus === 'connecting'
+              ? 'Reconnecting'
+              : 'Disconnected'}
+          </span>
+          <span className={`role-badge role-${myRole}`}>{myRole}</span>
+          <button className="button button-leave" onClick={handleLeave}>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4H4.5A1.5 1.5 0 0 0 3 5.5v9A1.5 1.5 0 0 0 4.5 16H8m3-9 4 3-4 3m4-3H7" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <span>Leave room</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Grid: Video Player + Sidebar */}
       <div className="room-grid">
-        {/* Left Column: Player & Controls */}
         <div className="video-section">
-          <VideoPlayer
-            videoId={videoId}
-            syncState={syncState}
-            onProgressUpdate={handleProgressUpdate}
-            canControl={canControl}
-          />
+          <section className="video-panel" aria-label="Shared video player">
+            <VideoPlayer
+              videoId={videoId}
+              syncState={syncState}
+              onProgressUpdate={handleProgressUpdate}
+              canControl={canControl}
+            />
 
-          <PlayerControls
-            canControl={canControl}
-            playState={syncState.playState}
-            currentTime={progress.currentTime}
-            duration={progress.duration}
-            hasVideo={Boolean(videoId)}
-            onPlay={handlePlay}
-            onPause={handlePause}
-            onSeek={handleSeek}
-            onChangeVideo={handleChangeVideo}
-          />
+            <PlayerControls
+              canControl={canControl}
+              playState={syncState.playState}
+              currentTime={progress.currentTime}
+              duration={progress.duration}
+              hasVideo={Boolean(videoId)}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onSeek={handleSeek}
+              onChangeVideo={handleChangeVideo}
+            />
+          </section>
         </div>
 
-        {/* Right Column: Participant List & Controls */}
         <div className="sidebar-section">
           <ParticipantList
             participants={participants}
@@ -259,7 +256,7 @@ function Room({ roomData, onLeaveRoom }) {
           />
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
