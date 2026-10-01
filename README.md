@@ -2,7 +2,7 @@
 
 A real-time collaborative video watching web application where users can create or join synchronized watch rooms, enjoy synchronized YouTube video playback, and manage role-based permissions (Host, Moderator, Participant) over WebSockets.
 
-**Live URL:** `<add after deployment>`
+**Live URL:** https://web3task-watch-party-server.onrender.com
 
 ---
 

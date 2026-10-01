@@ -169,9 +169,27 @@ body:has(.room-container) .status-bar { display: none; }
 .hp-mark svg { width: 18px; height: 18px; }
 .hp-wordmark { font-family: var(--serif); font-size: 22px; letter-spacing: 0.01em; color: var(--text); }
 
-.hp-panel { display: grid; place-items: center; padding: 96px 48px 48px; }
-.hp-form { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 16px; }
-.hp-title { font-family: var(--serif); font-weight: 500; font-size: 34px; line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 12px; }
+.hp-panel {
+  display: grid;
+  place-items: center;
+  padding: 72px 52px 52px;
+}
+.hp-form {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transform: translateY(-6px);
+}
+.hp-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.5rem, 2.7vw, 3.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
 .hp-field { display: flex; flex-direction: column; gap: 8px; }
 .hp-field label { font-size: 13px; color: var(--text-muted); }
 .hp-input { height: 48px; padding: 0 16px; }

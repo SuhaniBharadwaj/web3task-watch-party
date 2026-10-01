@@ -1,8 +1,5 @@
 # Project Status
 
-## Current Stage
-Complete: All Mandatory Requirements (M1-M9) & Bonus B1 Implemented and Tested.
-
 ## Completed
 - Antigravity installed & Git repository initialized
 - Monorepo architecture (/server and /client)
@@ -22,17 +19,6 @@ Complete: All Mandatory Requirements (M1-M9) & Bonus B1 Implemented and Tested.
 - Single-service Render deployment readiness and production build scripts
 - Complete documentation and architectural overview in README.md
 
-## In Progress
-- Premium visual redesign pass for the watch party UI is complete and verified in-browser.
-- Frontend styling changes are limited to layout, spacing, typography, colors, and hierarchy; no backend or socket logic changes were introduced.
-
-## Not Started
-- Persistent database (intentionally omitted; memory store used per assignment scope)
-- User authentication (out of scope for MVP)
-- Real-time chat & emojis (out of scope for MVP)
-
-## Known Issues
-None.
 
 ## Last Updated
 Visual redesign milestone completed and verified in the browser. Multi-user room join, host video load, and synced room state were confirmed on the running app.
